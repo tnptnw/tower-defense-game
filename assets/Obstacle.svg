@@ -1,0 +1,38 @@
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="obstacleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2a2a3a"/>
+      <stop offset="100%" stop-color="#0a0a14"/>
+    </linearGradient>
+    <linearGradient id="rockGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4a4a5a"/>
+      <stop offset="60%" stop-color="#2a2a38"/>
+      <stop offset="100%" stop-color="#1a1a28"/>
+    </linearGradient>
+    <filter id="obstacleGlow">
+      <feGaussianBlur stdDeviation="1" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Base shadow -->
+  <ellipse cx="24" cy="42" rx="16" ry="4" fill="#000000" fill-opacity="0.4"/>
+
+  <!-- Main rock shape -->
+  <polygon points="8,38 6,24 14,10 24,6 36,10 42,22 40,38" fill="url(#rockGrad)" stroke="#5a5a6a" stroke-width="1.5"/>
+
+  <!-- Rock highlight face -->
+  <polygon points="14,10 24,6 36,10 32,22 20,24 12,20" fill="#3a3a4a" stroke="none"/>
+
+  <!-- Rock cracks -->
+  <line x1="20" y1="18" x2="16" y2="30" stroke="#1a1a28" stroke-width="1.2"/>
+  <line x1="28" y1="16" x2="32" y2="28" stroke="#1a1a28" stroke-width="1"/>
+  <line x1="22" y1="28" x2="30" y2="36" stroke="#1a1a28" stroke-width="0.8"/>
+
+  <!-- Glowing circuit cracks (corrupted terrain) -->
+  <line x1="18" y1="20" x2="14" y2="32" stroke="#3344aa" stroke-width="0.8" stroke-opacity="0.6" filter="url(#obstacleGlow)"/>
+  <line x1="26" y1="18" x2="30" y2="28" stroke="#3344aa" stroke-width="0.8" stroke-opacity="0.5" filter="url(#obstacleGlow)"/>
+
+  <!-- Top highlight -->
+  <polygon points="16,12 24,8 32,12 28,18 20,18" fill="#5a5a6a" fill-opacity="0.5"/>
+</svg>

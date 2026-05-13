@@ -14,7 +14,11 @@ export class WaveManager {
     }
     const base = this.config.wave.baseCount;
     const increment = this.config.wave.increment;
-    this.toSpawn = base + increment * (this.waveNumber - 1);
+    const scaled =
+      1 + this.config.wave.countScalePerWave * (this.waveNumber - 1);
+    this.toSpawn = Math.round(
+      (base + increment * (this.waveNumber - 1)) * scaled,
+    );
     this.spawnTimer = 0;
     this.active = true;
     this.bossPending = this.config.wave.bossWaves.includes(this.waveNumber);
@@ -31,7 +35,12 @@ export class WaveManager {
       const typeKey = this.pickEnemyType();
       context.spawnEnemy(typeKey);
       this.toSpawn -= 1;
-      this.spawnTimer = this.config.wave.spawnIntervalMs;
+      const interval = Math.max(
+        this.config.wave.minSpawnIntervalMs,
+        this.config.wave.spawnIntervalMs *
+          Math.pow(this.config.wave.spawnIntervalScale, this.waveNumber - 1),
+      );
+      this.spawnTimer = interval;
     }
 
     if (this.toSpawn === 0 && this.bossPending) {
@@ -39,7 +48,11 @@ export class WaveManager {
       this.bossPending = false;
     }
 
-    if (this.toSpawn === 0 && !this.bossPending && context.enemies.length === 0) {
+    if (
+      this.toSpawn === 0 &&
+      !this.bossPending &&
+      context.enemies.length === 0
+    ) {
       this.active = false;
       context.onWaveCleared();
     }
@@ -52,7 +65,17 @@ export class WaveManager {
     if (this.waveNumber <= 4) {
       return Math.random() < 0.7 ? "drone" : "tank";
     }
-    return Math.random() < 0.55 ? "drone" : (Math.random() < 0.6 ? "tank" : "phantom");
+    const t = Math.min((this.waveNumber - 4) / 6, 1);
+    const tankChance = 0.35 + 0.25 * t;
+    const phantomChance = 0.1 + 0.25 * t;
+    const roll = Math.random();
+    if (roll < tankChance) {
+      return "tank";
+    }
+    if (roll < tankChance + phantomChance) {
+      return "phantom";
+    }
+    return "drone";
   }
 
   advanceWave() {

@@ -132,13 +132,19 @@ export class Tower {
     }
     const pos = grid.cellToWorldCenter(this.cell.x, this.cell.y);
     ctx.save();
-    ctx.fillStyle = this.color;
-    ctx.fillRect(
-      pos.x - grid.cellSize * 0.3,
-      pos.y - grid.cellSize * 0.3,
-      grid.cellSize * 0.6,
-      grid.cellSize * 0.6,
-    );
+    const sprite = TOWER_SPRITES[this.typeKey];
+    const size = grid.cellSize * 0.9;
+    if (sprite && sprite.complete && sprite.naturalWidth > 0) {
+      ctx.drawImage(sprite, pos.x - size / 2, pos.y - size / 2, size, size);
+    } else {
+      ctx.fillStyle = this.color;
+      ctx.fillRect(
+        pos.x - grid.cellSize * 0.3,
+        pos.y - grid.cellSize * 0.3,
+        grid.cellSize * 0.6,
+        grid.cellSize * 0.6,
+      );
+    }
 
     const hpRatio = Math.max(this.hp, 0) / this.maxHp;
     const barWidth = grid.cellSize * 0.6;
@@ -208,4 +214,16 @@ export class Tower {
     }
     ctx.restore();
   }
+}
+
+const TOWER_SPRITES = {
+  blaster: loadSprite("assets/Blaster.png"),
+  nova: loadSprite("assets/Nova.png"),
+  cryo: loadSprite("assets/Cryo.png"),
+};
+
+function loadSprite(path) {
+  const img = new Image();
+  img.src = path;
+  return img;
 }

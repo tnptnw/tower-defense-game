@@ -60,32 +60,55 @@ export class Grid {
   worldToCell(px, py) {
     return {
       x: Math.floor(px / this.cellSize),
-      y: Math.floor(py / this.cellSize)
+      y: Math.floor(py / this.cellSize),
     };
   }
 
   cellToWorldCenter(x, y) {
     return {
       x: x * this.cellSize + this.cellSize / 2,
-      y: y * this.cellSize + this.cellSize / 2
+      y: y * this.cellSize + this.cellSize / 2,
     };
   }
 
   render(ctx) {
     ctx.save();
     ctx.clearRect(0, 0, this.cols * this.cellSize, this.rows * this.cellSize);
-    ctx.fillStyle = "#f7f4ee";
-    ctx.fillRect(0, 0, this.cols * this.cellSize, this.rows * this.cellSize);
+    const width = this.cols * this.cellSize;
+    const height = this.rows * this.cellSize;
+    if (BACKGROUND_IMAGE.complete && BACKGROUND_IMAGE.naturalWidth > 0) {
+      ctx.drawImage(BACKGROUND_IMAGE, 0, 0, width, height);
+    } else {
+      ctx.fillStyle = "#f7f4ee";
+      ctx.fillRect(0, 0, width, height);
+    }
 
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(255,255,255,0.35)";
     for (let y = 0; y < this.rows; y += 1) {
       for (let x = 0; x < this.cols; x += 1) {
         const left = x * this.cellSize;
         const top = y * this.cellSize;
-        ctx.strokeStyle = "#e3ded7";
         ctx.strokeRect(left, top, this.cellSize, this.cellSize);
         if (this.isTerrain(x, y)) {
-          ctx.fillStyle = "#b0a7a0";
-          ctx.fillRect(left + 1, top + 1, this.cellSize - 2, this.cellSize - 2);
+          if (OBSTACLE_IMAGE.complete && OBSTACLE_IMAGE.naturalWidth > 0) {
+            const size = this.cellSize * 0.95;
+            ctx.drawImage(
+              OBSTACLE_IMAGE,
+              left + (this.cellSize - size) / 2,
+              top + (this.cellSize - size) / 2,
+              size,
+              size,
+            );
+          } else {
+            ctx.fillStyle = "rgba(40,40,40,0.35)";
+            ctx.fillRect(
+              left + 1,
+              top + 1,
+              this.cellSize - 2,
+              this.cellSize - 2,
+            );
+          }
         }
       }
     }
@@ -105,3 +128,9 @@ export class Grid {
     ctx.restore();
   }
 }
+
+const BACKGROUND_IMAGE = new Image();
+BACKGROUND_IMAGE.src = "assets/Backgound.png";
+
+const OBSTACLE_IMAGE = new Image();
+OBSTACLE_IMAGE.src = "assets/Obstacle.svg";

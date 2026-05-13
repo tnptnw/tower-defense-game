@@ -146,11 +146,23 @@ export class Enemy {
 
   render(ctx, cellSize) {
     const radius = this.isBoss ? cellSize * 0.38 : cellSize * 0.28;
+    const sprite = ENEMY_SPRITES[this.typeKey];
+    const size = this.isBoss ? cellSize * 1.1 : cellSize * 0.9;
     ctx.save();
-    ctx.fillStyle = this.color;
-    ctx.beginPath();
-    ctx.arc(this.position.x, this.position.y, radius, 0, Math.PI * 2);
-    ctx.fill();
+    if (sprite && sprite.complete && sprite.naturalWidth > 0) {
+      ctx.drawImage(
+        sprite,
+        this.position.x - size / 2,
+        this.position.y - size / 2,
+        size,
+        size,
+      );
+    } else {
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(this.position.x, this.position.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     const hpRatio = Math.max(this.hp, 0) / this.maxHp;
     ctx.fillStyle = "rgba(0,0,0,0.15)";
@@ -180,4 +192,17 @@ export class Enemy {
     }
     ctx.restore();
   }
+}
+
+const ENEMY_SPRITES = {
+  drone: loadSprite("assets/Drone.png"),
+  tank: loadSprite("assets/Tank.png"),
+  phantom: loadSprite("assets/Phantom.png"),
+  boss: loadSprite("assets/Boss.png"),
+};
+
+function loadSprite(path) {
+  const img = new Image();
+  img.src = path;
+  return img;
 }

@@ -2,21 +2,21 @@ export const CONFIG = {
   grid: {
     cols: 20,
     rows: 15,
-    cellSize: 32
+    cellSize: 32,
   },
   start: { x: 0, y: 7 },
   goal: { x: 19, y: 7 },
   player: {
     maxHp: 20,
-    startEc: 100
+    startEc: 100,
   },
   economy: {
-    sellRefund: 0.5
+    sellRefund: 0.5,
   },
   upgrade: {
     costMultiplier: 1.5,
     damageMultiplier: 1.3,
-    rangeMultiplier: 1.2
+    rangeMultiplier: 1.2,
   },
   towers: {
     blaster: {
@@ -26,7 +26,7 @@ export const CONFIG = {
       range: 3.5,
       fireRate: 2.2,
       hp: 70,
-      color: "#2f76d0"
+      color: "#2f76d0",
     },
     cryo: {
       name: "Cryo",
@@ -37,7 +37,7 @@ export const CONFIG = {
       hp: 60,
       slowMultiplier: 0.6,
       slowDuration: 2.0,
-      color: "#57b3c2"
+      color: "#57b3c2",
     },
     nova: {
       name: "Nova",
@@ -47,8 +47,8 @@ export const CONFIG = {
       fireRate: 1.2,
       splashRadius: 1.6,
       hp: 90,
-      color: "#d1812f"
-    }
+      color: "#d1812f",
+    },
   },
   enemies: {
     drone: {
@@ -56,7 +56,7 @@ export const CONFIG = {
       hp: 30,
       speed: 1.6,
       reward: 10,
-      color: "#5a5f6b"
+      color: "#5a5f6b",
     },
     tank: {
       name: "Tank",
@@ -65,7 +65,7 @@ export const CONFIG = {
       reward: 30,
       attackDamage: 10,
       attackRate: 1.0,
-      color: "#8e6a3e"
+      color: "#8e6a3e",
     },
     phantom: {
       name: "Phantom",
@@ -73,53 +73,71 @@ export const CONFIG = {
       speed: 1.2,
       reward: 20,
       slowResistance: 0.5,
-      color: "#7e67c4"
+      color: "#7e67c4",
     },
     boss: {
       name: "Boss",
       hp: 320,
       speed: 0.7,
       reward: 100,
-      color: "#c6462f"
-    }
+      color: "#c6462f",
+    },
   },
   wave: {
     total: 10,
     baseCount: 6,
     increment: 2,
     spawnIntervalMs: 700,
+    countScalePerWave: 0.08,
+    minSpawnIntervalMs: 380,
+    spawnIntervalScale: 0.95,
     bossWaves: [5, 10],
-    clearBonusEc: 20
+    clearBonusEc: 20,
   },
   dda: {
     windowWaves: 3,
     weights: {
       kill: 0.5,
-      hp: 0.5
+      hp: 0.5,
     },
     tiers: [
-      { min: 0.8, speed: 1.15, hp: 1.15, message: "The machines are adapting." },
+      {
+        min: 0.8,
+        speed: 1.15,
+        hp: 1.15,
+        message: "The machines are adapting.",
+      },
       { min: 0.6, speed: 1.0, hp: 1.0, message: "The battle is balanced." },
       { min: 0.4, speed: 0.9, hp: 0.9, message: "They seem disorganized." },
-      { min: 0.0, speed: 0.8, hp: 0.8, message: "The machines are losing coherence." }
+      {
+        min: 0.0,
+        speed: 0.8,
+        hp: 0.8,
+        message: "The machines are losing coherence.",
+      },
     ],
     caps: {
       speed: { min: 0.5, max: 2.0 },
-      hp: { min: 0.5, max: 2.5 }
-    }
+      hp: { min: 0.5, max: 2.5 },
+    },
   },
   boss: {
     buffRadius: 3.5,
-    buffMultiplier: 1.2
+    buffMultiplier: 1.2,
   },
   map: {
     randomize: true,
     density: 0.06,
     maxAttempts: 40,
     blocked: [
-      { x: 6, y: 4 }, { x: 7, y: 4 }, { x: 8, y: 4 },
-      { x: 12, y: 10 }, { x: 13, y: 10 }, { x: 14, y: 10 },
-      { x: 10, y: 7 }, { x: 10, y: 8 }
-    ]
-  }
+      { x: 6, y: 4 },
+      { x: 7, y: 4 },
+      { x: 8, y: 4 },
+      { x: 12, y: 10 },
+      { x: 13, y: 10 },
+      { x: 14, y: 10 },
+      { x: 10, y: 7 },
+      { x: 10, y: 8 },
+    ],
+  },
 };
