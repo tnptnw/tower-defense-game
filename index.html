@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TowerMind - AI Tower Defense</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-title">TowerMind</span>
+          <span class="brand-subtitle">AI Tower Defense</span>
+        </div>
+        <div class="hud" aria-live="polite">
+          <div>HP <span id="hpValue">20</span></div>
+          <div>EC <span id="ecValue">100</span></div>
+          <div>Wave <span id="waveValue">1</span></div>
+          <div>Score <span id="scoreValue">0</span></div>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="canvas-wrap">
+          <canvas id="gameCanvas" width="640" height="480" aria-label="Game canvas"></canvas>
+          <div id="notification" class="notification" role="status"></div>
+        </section>
+
+        <aside class="panel">
+          <div class="panel-block">
+            <h2>Towers</h2>
+            <div class="button-grid">
+              <button class="tower-btn" data-tower="blaster">Blaster (50)</button>
+              <button class="tower-btn" data-tower="cryo">Cryo (75)</button>
+              <button class="tower-btn" data-tower="nova">Nova (120)</button>
+            </div>
+          </div>
+
+          <div class="panel-block">
+            <h2>Actions</h2>
+            <div class="button-grid">
+              <button id="startWaveBtn">Start Wave</button>
+              <button id="debugBtn">Debug: Off</button>
+            </div>
+          </div>
+
+          <div class="panel-block">
+            <h2>Selected Tower</h2>
+            <div id="selectedInfo" class="selected-info">None</div>
+            <div class="button-grid">
+              <button id="upgradeBtn" disabled>Upgrade</button>
+              <button id="sellBtn" disabled>Sell</button>
+            </div>
+          </div>
+
+          <div class="panel-block legend">
+            <h2>Legend</h2>
+            <div><span class="swatch blaster"></span> Blaster</div>
+            <div><span class="swatch cryo"></span> Cryo</div>
+            <div><span class="swatch nova"></span> Nova</div>
+            <div><span class="swatch drone"></span> Drone</div>
+            <div><span class="swatch tank"></span> Tank</div>
+            <div><span class="swatch phantom"></span> Phantom</div>
+            <div><span class="swatch boss"></span> Boss</div>
+          </div>
+        </aside>
+      </main>
+
+      <div id="endScreen" class="end-screen hidden" role="dialog" aria-modal="true">
+        <div class="end-card">
+          <h2 id="endTitle">Game Over</h2>
+          <div id="endSummary"></div>
+          <div class="leaderboard">
+            <h3>Top 5</h3>
+            <ol id="leaderboardList"></ol>
+          </div>
+          <button id="restartBtn">Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
