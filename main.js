@@ -15,7 +15,56 @@ const ctx = canvas.getContext("2d");
 canvas.width = CONFIG.grid.cols * CONFIG.grid.cellSize;
 canvas.height = CONFIG.grid.rows * CONFIG.grid.cellSize;
 
-const grid = new Grid(CONFIG);
+function generateBlockedCells() {
+  if (!CONFIG.map.randomize) {
+    return CONFIG.map.blocked;
+  }
+
+  const totalCells = CONFIG.grid.cols * CONFIG.grid.rows;
+  const targetCount = Math.max(0, Math.round(totalCells * CONFIG.map.density));
+  const maxAttempts = CONFIG.map.maxAttempts || 30;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const blocked = [];
+    const blockedSet = new Set();
+    let tries = 0;
+
+    while (blocked.length < targetCount && tries < targetCount * 12) {
+      tries += 1;
+      const x = Math.floor(Math.random() * CONFIG.grid.cols);
+      const y = Math.floor(Math.random() * CONFIG.grid.rows);
+      if ((x === CONFIG.start.x && y === CONFIG.start.y) || (x === CONFIG.goal.x && y === CONFIG.goal.y)) {
+        continue;
+      }
+      if (x === CONFIG.start.x || x === CONFIG.goal.x) {
+        continue;
+      }
+      const key = `${x},${y}`;
+      if (blockedSet.has(key)) {
+        continue;
+      }
+      blockedSet.add(key);
+      blocked.push({ x, y });
+    }
+
+    const testGrid = new Grid({
+      ...CONFIG,
+      map: { ...CONFIG.map, blocked }
+    });
+    const { path } = findPath(testGrid, testGrid.start, testGrid.goal);
+    if (path) {
+      return blocked;
+    }
+  }
+
+  return CONFIG.map.blocked;
+}
+
+const blockedCells = generateBlockedCells();
+const grid = new Grid({
+  ...CONFIG,
+  map: { ...CONFIG.map, blocked: blockedCells }
+});
 const enemies = [];
 const towers = [];
 const dda = new DDAEngine(CONFIG);
