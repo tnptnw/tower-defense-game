@@ -22,6 +22,11 @@ export class Enemy {
     this.attackDamage = base.attackDamage || 0;
     this.attackRate = base.attackRate || 0;
     this.attackCooldown = 0;
+    this.attackFxTimer = 0;
+    this.attackFxDuration = 0.14;
+    this.attackFxFrom = null;
+    this.attackFxTo = null;
+    this.attackFxCooldown = 0;
 
     const start = grid.cellToWorldCenter(grid.start.x, grid.start.y);
     this.position = { x: start.x, y: start.y };
@@ -40,7 +45,7 @@ export class Enemy {
   getCell(cellSize) {
     return {
       x: Math.floor(this.position.x / cellSize),
-      y: Math.floor(this.position.y / cellSize)
+      y: Math.floor(this.position.y / cellSize),
     };
   }
 
@@ -66,6 +71,18 @@ export class Enemy {
       }
     }
 
+    if (this.attackFxTimer > 0) {
+      this.attackFxTimer -= dt;
+      if (this.attackFxTimer <= 0) {
+        this.attackFxFrom = null;
+        this.attackFxTo = null;
+      }
+    }
+
+    if (this.attackFxCooldown > 0) {
+      this.attackFxCooldown -= dt;
+    }
+
     runFSM(this, context, dt);
   }
 
@@ -86,7 +103,8 @@ export class Enemy {
     const distance = Math.hypot(dx, dy);
 
     const bossBuff = context.getBossBuffMultiplier(this);
-    const speedPx = this.speedCells * grid.cellSize * this.slowMultiplier * bossBuff;
+    const speedPx =
+      this.speedCells * grid.cellSize * this.slowMultiplier * bossBuff;
     const step = speedPx * dt;
 
     if (distance <= step) {
@@ -103,13 +121,27 @@ export class Enemy {
     this.position.y += (dy / distance) * step;
   }
 
-  attackTower(dt, tower) {
+  attackTower(dt, tower, grid) {
     this.attackCooldown -= dt;
     if (this.attackCooldown > 0) {
       return;
     }
-    this.attackCooldown = 1 / this.attackRate;
-    tower.takeDamage(this.attackDamage);
+    const attackRate = this.attackRate > 0 ? this.attackRate : 1;
+    this.attackCooldown = 1 / attackRate;
+    this.triggerAttackFx(tower, grid);
+    if (this.attackDamage > 0) {
+      tower.takeDamage(this.attackDamage, this.typeKey);
+    }
+  }
+
+  triggerAttackFx(tower, grid) {
+    if (!grid || this.attackFxCooldown > 0) {
+      return;
+    }
+    this.attackFxTimer = this.attackFxDuration;
+    this.attackFxFrom = { x: this.position.x, y: this.position.y };
+    this.attackFxTo = grid.cellToWorldCenter(tower.cell.x, tower.cell.y);
+    this.attackFxCooldown = this.attackFxDuration * 2;
   }
 
   render(ctx, cellSize) {
@@ -126,15 +158,26 @@ export class Enemy {
       this.position.x - radius,
       this.position.y - radius - 6,
       radius * 2,
-      4
+      4,
     );
     ctx.fillStyle = "#0f8a7a";
     ctx.fillRect(
       this.position.x - radius,
       this.position.y - radius - 6,
       radius * 2 * hpRatio,
-      4
+      4,
     );
+
+    if (this.attackFxTimer > 0 && this.attackFxFrom && this.attackFxTo) {
+      const alpha = Math.min(this.attackFxTimer / this.attackFxDuration, 1);
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = "#f2c066";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(this.attackFxFrom.x, this.attackFxFrom.y);
+      ctx.lineTo(this.attackFxTo.x, this.attackFxTo.y);
+      ctx.stroke();
+    }
     ctx.restore();
   }
 }

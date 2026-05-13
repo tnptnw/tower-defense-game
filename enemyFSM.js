@@ -2,7 +2,7 @@ export const EnemyState = {
   IDLE: "IDLE",
   MOVE: "MOVE",
   ATTACK: "ATTACK",
-  DEAD: "DEAD"
+  DEAD: "DEAD",
 };
 
 function getAdjacentTower(enemy, grid) {
@@ -11,7 +11,7 @@ function getAdjacentTower(enemy, grid) {
     { x: 1, y: 0 },
     { x: -1, y: 0 },
     { x: 0, y: 1 },
-    { x: 0, y: -1 }
+    { x: 0, y: -1 },
   ];
 
   for (const dir of dirs) {
@@ -43,14 +43,17 @@ export function runFSM(enemy, context, dt) {
       break;
     }
     case EnemyState.MOVE: {
-      if (enemy.isTank) {
+      if (enemy.isTank || enemy.typeKey === "phantom" || enemy.isBoss) {
         const tower = getAdjacentTower(enemy, context.grid);
         if (tower) {
-          // FSM transition: MOVE to ATTACK when a tank sees a nearby tower.
-          enemy.state = EnemyState.ATTACK;
-          enemy.targetTower = tower;
-          enemy.attackCooldown = 0;
-          break;
+          if (enemy.isTank) {
+            // FSM transition: MOVE to ATTACK when a tank sees a nearby tower.
+            enemy.state = EnemyState.ATTACK;
+            enemy.targetTower = tower;
+            enemy.attackCooldown = 0;
+            break;
+          }
+          enemy.triggerAttackFx(tower, context.grid);
         }
       }
       enemy.moveAlongPath(dt, context);
@@ -67,7 +70,7 @@ export function runFSM(enemy, context, dt) {
         enemy.targetTower = null;
         break;
       }
-      enemy.attackTower(dt, target);
+      enemy.attackTower(dt, target, context.grid);
       break;
     }
     case EnemyState.DEAD: {
