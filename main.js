@@ -108,8 +108,10 @@ function handleCanvasClick(event) {
     return;
   }
   const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const x = (event.clientX - rect.left) * scaleX;
+  const y = (event.clientY - rect.top) * scaleY;
   const cell = grid.worldToCell(x, y);
   if (!grid.isInside(cell.x, cell.y)) {
     return;

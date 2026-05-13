@@ -19,6 +19,11 @@ export class Tower {
     this.destroyed = false;
     this.totalSpent = base.cost;
     this.hasDealtDamage = false;
+    this.shotTimer = 0;
+    this.shotFrom = null;
+    this.shotTo = null;
+    this.shotIsSplash = false;
+    this.shotRadius = 0;
   }
 
   update(dt, context) {
@@ -27,6 +32,13 @@ export class Tower {
     }
 
     this.cooldown -= dt;
+    if (this.shotTimer > 0) {
+      this.shotTimer -= dt;
+      if (this.shotTimer <= 0) {
+        this.shotFrom = null;
+        this.shotTo = null;
+      }
+    }
     if (this.cooldown > 0) {
       return;
     }
@@ -53,6 +65,11 @@ export class Tower {
     }
 
     this.cooldown = 1 / this.fireRate;
+    this.shotTimer = 0.12;
+    this.shotFrom = origin;
+    this.shotTo = { x: target.position.x, y: target.position.y };
+    this.shotIsSplash = this.splashRadius > 0;
+    this.shotRadius = this.splashRadius;
 
     if (this.splashRadius > 0) {
       for (const enemy of context.enemies) {
@@ -122,6 +139,25 @@ export class Tower {
         grid.cellSize * 0.64,
         grid.cellSize * 0.64
       );
+    }
+
+    if (this.shotTimer > 0 && this.shotFrom && this.shotTo) {
+      const alpha = Math.min(this.shotTimer / 0.12, 1);
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = this.color;
+      ctx.lineWidth = this.shotIsSplash ? 2 : 3;
+      ctx.beginPath();
+      ctx.moveTo(this.shotFrom.x, this.shotFrom.y);
+      ctx.lineTo(this.shotTo.x, this.shotTo.y);
+      ctx.stroke();
+
+      if (this.shotIsSplash) {
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(this.shotTo.x, this.shotTo.y, this.shotRadius * (1 - alpha * 0.4), 0, Math.PI * 2);
+        ctx.stroke();
+      }
     }
     ctx.restore();
   }
