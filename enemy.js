@@ -42,11 +42,8 @@ export class Enemy {
     this.targetTower = null;
   }
 
-  getCell(cellSize) {
-    return {
-      x: Math.floor(this.position.x / cellSize),
-      y: Math.floor(this.position.y / cellSize),
-    };
+  getCell(grid) {
+    return grid.worldToCell(this.position.x, this.position.y);
   }
 
   setPath(path) {

@@ -3,6 +3,18 @@ export class Grid {
     this.cols = config.grid.cols;
     this.rows = config.grid.rows;
     this.cellSize = config.grid.cellSize;
+    this.canvasWidth = config.grid.canvasWidth || this.cols * this.cellSize;
+    this.canvasHeight = config.grid.canvasHeight || this.rows * this.cellSize;
+    const gridWidth = this.cols * this.cellSize;
+    const gridHeight = this.rows * this.cellSize;
+    this.offsetX =
+      typeof config.grid.offsetX === "number"
+        ? config.grid.offsetX
+        : Math.max(0, Math.floor((this.canvasWidth - gridWidth) / 2));
+    this.offsetY =
+      typeof config.grid.offsetY === "number"
+        ? config.grid.offsetY
+        : Math.max(0, Math.floor((this.canvasHeight - gridHeight) / 2));
     this.start = { ...config.start };
     this.goal = { ...config.goal };
     this.terrain = new Set();
@@ -59,23 +71,23 @@ export class Grid {
 
   worldToCell(px, py) {
     return {
-      x: Math.floor(px / this.cellSize),
-      y: Math.floor(py / this.cellSize),
+      x: Math.floor((px - this.offsetX) / this.cellSize),
+      y: Math.floor((py - this.offsetY) / this.cellSize),
     };
   }
 
   cellToWorldCenter(x, y) {
     return {
-      x: x * this.cellSize + this.cellSize / 2,
-      y: y * this.cellSize + this.cellSize / 2,
+      x: this.offsetX + x * this.cellSize + this.cellSize / 2,
+      y: this.offsetY + y * this.cellSize + this.cellSize / 2,
     };
   }
 
   render(ctx) {
     ctx.save();
-    ctx.clearRect(0, 0, this.cols * this.cellSize, this.rows * this.cellSize);
-    const width = this.cols * this.cellSize;
-    const height = this.rows * this.cellSize;
+    ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    const width = this.canvasWidth;
+    const height = this.canvasHeight;
     if (BACKGROUND_IMAGE.complete && BACKGROUND_IMAGE.naturalWidth > 0) {
       ctx.drawImage(BACKGROUND_IMAGE, 0, 0, width, height);
     } else {
@@ -83,12 +95,12 @@ export class Grid {
       ctx.fillRect(0, 0, width, height);
     }
 
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    ctx.lineWidth = 0.6;
+    ctx.strokeStyle = "rgba(255,255,255,0.2)";
     for (let y = 0; y < this.rows; y += 1) {
       for (let x = 0; x < this.cols; x += 1) {
-        const left = x * this.cellSize;
-        const top = y * this.cellSize;
+        const left = this.offsetX + x * this.cellSize;
+        const top = this.offsetY + y * this.cellSize;
         ctx.strokeRect(left, top, this.cellSize, this.cellSize);
         if (this.isTerrain(x, y)) {
           if (OBSTACLE_IMAGE.complete && OBSTACLE_IMAGE.naturalWidth > 0) {
@@ -113,24 +125,52 @@ export class Grid {
       }
     }
 
-    ctx.fillStyle = "#0f8a7a";
     const startPos = this.cellToWorldCenter(this.start.x, this.start.y);
-    ctx.beginPath();
-    ctx.arc(startPos.x, startPos.y, this.cellSize * 0.3, 0, Math.PI * 2);
-    ctx.fill();
+    if (ENEMY_BASE_IMAGE.complete && ENEMY_BASE_IMAGE.naturalWidth > 0) {
+      const size = this.cellSize * 0.95;
+      ctx.drawImage(
+        ENEMY_BASE_IMAGE,
+        startPos.x - size / 2,
+        startPos.y - size / 2,
+        size,
+        size,
+      );
+    } else {
+      ctx.fillStyle = "#0f8a7a";
+      ctx.beginPath();
+      ctx.arc(startPos.x, startPos.y, this.cellSize * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
-    ctx.fillStyle = "#c6462f";
     const goalPos = this.cellToWorldCenter(this.goal.x, this.goal.y);
-    ctx.beginPath();
-    ctx.arc(goalPos.x, goalPos.y, this.cellSize * 0.35, 0, Math.PI * 2);
-    ctx.fill();
+    if (TOWER_BASE_IMAGE.complete && TOWER_BASE_IMAGE.naturalWidth > 0) {
+      const size = this.cellSize * 1.0;
+      ctx.drawImage(
+        TOWER_BASE_IMAGE,
+        goalPos.x - size / 2,
+        goalPos.y - size / 2,
+        size,
+        size,
+      );
+    } else {
+      ctx.fillStyle = "#c6462f";
+      ctx.beginPath();
+      ctx.arc(goalPos.x, goalPos.y, this.cellSize * 0.35, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     ctx.restore();
   }
 }
 
 const BACKGROUND_IMAGE = new Image();
-BACKGROUND_IMAGE.src = "assets/Backgound.png";
+BACKGROUND_IMAGE.src = "assets/Background.png";
 
 const OBSTACLE_IMAGE = new Image();
 OBSTACLE_IMAGE.src = "assets/Obstacle.svg";
+
+const ENEMY_BASE_IMAGE = new Image();
+ENEMY_BASE_IMAGE.src = "assets/Enemy base.png";
+
+const TOWER_BASE_IMAGE = new Image();
+TOWER_BASE_IMAGE.src = "assets/Tower base.png";

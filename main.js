@@ -12,8 +12,10 @@ import { ScoreSystem } from "./score.js";
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = CONFIG.grid.cols * CONFIG.grid.cellSize;
-canvas.height = CONFIG.grid.rows * CONFIG.grid.cellSize;
+canvas.width =
+  CONFIG.grid.canvasWidth || CONFIG.grid.cols * CONFIG.grid.cellSize;
+canvas.height =
+  CONFIG.grid.canvasHeight || CONFIG.grid.rows * CONFIG.grid.cellSize;
 
 function generateBlockedCells() {
   if (!CONFIG.map.randomize) {
@@ -33,7 +35,10 @@ function generateBlockedCells() {
       tries += 1;
       const x = Math.floor(Math.random() * CONFIG.grid.cols);
       const y = Math.floor(Math.random() * CONFIG.grid.rows);
-      if ((x === CONFIG.start.x && y === CONFIG.start.y) || (x === CONFIG.goal.x && y === CONFIG.goal.y)) {
+      if (
+        (x === CONFIG.start.x && y === CONFIG.start.y) ||
+        (x === CONFIG.goal.x && y === CONFIG.goal.y)
+      ) {
         continue;
       }
       if (x === CONFIG.start.x || x === CONFIG.goal.x) {
@@ -49,7 +54,7 @@ function generateBlockedCells() {
 
     const testGrid = new Grid({
       ...CONFIG,
-      map: { ...CONFIG.map, blocked }
+      map: { ...CONFIG.map, blocked },
     });
     const { path } = findPath(testGrid, testGrid.start, testGrid.goal);
     if (path) {
@@ -63,7 +68,7 @@ function generateBlockedCells() {
 const blockedCells = generateBlockedCells();
 const grid = new Grid({
   ...CONFIG,
-  map: { ...CONFIG.map, blocked: blockedCells }
+  map: { ...CONFIG.map, blocked: blockedCells },
 });
 const enemies = [];
 const towers = [];
@@ -78,7 +83,7 @@ const state = {
   ec: CONFIG.player.startEc,
   selectedTowerType: "blaster",
   selectedTower: null,
-  running: true
+  running: true,
 };
 
 function updateHud() {
@@ -87,7 +92,7 @@ function updateHud() {
     hp: state.hp,
     ec: state.ec,
     wave: waveManager.waveNumber,
-    score: score.getScore()
+    score: score.getScore(),
   });
 }
 
@@ -102,7 +107,7 @@ function spawnEnemy(typeKey) {
 
 function recalcAllEnemyPaths() {
   for (const enemy of enemies) {
-    const startCell = enemy.getCell(grid.cellSize);
+    const startCell = enemy.getCell(grid);
     const { path } = findPath(grid, startCell, grid.goal);
     enemy.setPath(path || []);
   }
@@ -126,7 +131,10 @@ function getBossBuffMultiplier(enemy) {
 function onWaveCleared() {
   state.ec += CONFIG.wave.clearBonusEc;
   ui.setWaveButtonEnabled(true);
-  const evalResult = dda.evaluateIfReady(waveManager.waveNumber, CONFIG.player.maxHp);
+  const evalResult = dda.evaluateIfReady(
+    waveManager.waveNumber,
+    CONFIG.player.maxHp,
+  );
   if (evalResult) {
     ui.showNotification(evalResult.message);
   }
@@ -148,7 +156,7 @@ function endGame(isWin) {
   ui.showEndScreen({
     title: isWin ? "You Win" : "Game Over",
     summary,
-    leaderboard
+    leaderboard,
   });
 }
 
@@ -221,7 +229,11 @@ function upgradeSelectedTower() {
     state.ec -= upgradeCost;
     dda.onEcSpent(upgradeCost);
     updateHud();
-    ui.setSelectedInfo(`${tower.name} (Lv ${tower.level}) HP ${tower.hp}`, tower.level < 2, true);
+    ui.setSelectedInfo(
+      `${tower.name} (Lv ${tower.level}) HP ${tower.hp}`,
+      tower.level < 2,
+      true,
+    );
   }
 }
 
@@ -279,7 +291,7 @@ ui.bindHandlers({
   },
   onUpgrade: upgradeSelectedTower,
   onSell: sellSelectedTower,
-  onRestart: () => window.location.reload()
+  onRestart: () => window.location.reload(),
 });
 
 ui.setTowerSelection(state.selectedTowerType);
@@ -298,7 +310,7 @@ function loop(time) {
     waveManager.update(dt, {
       enemies,
       spawnEnemy,
-      onWaveCleared
+      onWaveCleared,
     });
 
     for (const tower of towers) {
@@ -319,7 +331,7 @@ function loop(time) {
           removeEnemy(target);
           updateHud();
         },
-        getBossBuffMultiplier
+        getBossBuffMultiplier,
       });
     }
 

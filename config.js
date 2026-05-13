@@ -1,11 +1,13 @@
 export const CONFIG = {
   grid: {
-    cols: 20,
-    rows: 15,
+    cols: 18,
+    rows: 13,
     cellSize: 32,
+    canvasWidth: 640,
+    canvasHeight: 480,
   },
-  start: { x: 0, y: 7 },
-  goal: { x: 19, y: 7 },
+  start: { x: 0, y: 6 },
+  goal: { x: 17, y: 6 },
   player: {
     maxHp: 20,
     startEc: 100,
