@@ -113,6 +113,9 @@ export const CONFIG = {
     buffMultiplier: 1.2
   },
   map: {
+    randomize: true,
+    density: 0.06,
+    maxAttempts: 40,
     blocked: [
       { x: 6, y: 4 }, { x: 7, y: 4 }, { x: 8, y: 4 },
       { x: 12, y: 10 }, { x: 13, y: 10 }, { x: 14, y: 10 },
