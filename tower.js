@@ -75,6 +75,15 @@ export class Tower {
     this.shotTo = { x: target.position.x, y: target.position.y };
     this.shotIsSplash = this.splashRadius > 0;
     this.shotRadius = this.splashRadius;
+    
+    // Play SFX
+    if (this.typeKey === "nova") {
+      TOWER_SFX.shoot_nova.currentTime = 0;
+      TOWER_SFX.shoot_nova.play().catch(() => {});
+    } else {
+      TOWER_SFX.shoot_blaster.currentTime = 0;
+      TOWER_SFX.shoot_blaster.play().catch(() => {});
+    }
 
     if (this.splashRadius > 0) {
       for (const enemy of context.enemies) {
@@ -222,8 +231,19 @@ const TOWER_SPRITES = {
   cryo: loadSprite("assets/Cryo.png"),
 };
 
+const TOWER_SFX = {
+  shoot_blaster: loadAudio("assets/sfx/shoot_blaster.mp3"),
+  shoot_nova: loadAudio("assets/sfx/shoot_nova.mp3"),
+};
+
 function loadSprite(path) {
   const img = new Image();
   img.src = path;
   return img;
+}
+
+function loadAudio(path) {
+  const audio = new Audio(path);
+  audio.volume = 0.6;
+  return audio;
 }

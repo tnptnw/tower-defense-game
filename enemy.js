@@ -139,6 +139,9 @@ export class Enemy {
     this.attackFxFrom = { x: this.position.x, y: this.position.y };
     this.attackFxTo = grid.cellToWorldCenter(tower.cell.x, tower.cell.y);
     this.attackFxCooldown = this.attackFxDuration * 2;
+    
+    ENEMY_SFX.shoot_enemy.currentTime = 0;
+    ENEMY_SFX.shoot_enemy.play().catch(() => {});
   }
 
   render(ctx, cellSize) {
@@ -198,8 +201,18 @@ const ENEMY_SPRITES = {
   boss: loadSprite("assets/Boss.png"),
 };
 
+const ENEMY_SFX = {
+  shoot_enemy: loadAudio("assets/sfx/shoot_enemy.mp3"),
+};
+
 function loadSprite(path) {
   const img = new Image();
   img.src = path;
   return img;
+}
+
+function loadAudio(path) {
+  const audio = new Audio(path);
+  audio.volume = 0.5;
+  return audio;
 }
