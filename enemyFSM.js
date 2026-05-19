@@ -6,7 +6,7 @@ export const EnemyState = {
 };
 
 function getAdjacentTower(enemy, grid) {
-  const cell = enemy.getCell(grid.cellSize);
+  const cell = enemy.getCell(grid);
   const dirs = [
     { x: 1, y: 0 },
     { x: -1, y: 0 },
